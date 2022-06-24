@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'axiforma-light';
+  src: url('./assets/fonts/axiforma-thin.ttf');
+}
+
+@font-face {
+  font-family: 'axiforma-regular';
+  src: url('assets/fonts/axiforma-regular.ttf');
+}
+
+@font-face {
+  font-family: 'axiforma-semibold';
+  src: url('./assets/fonts/axiforma-semibold.ttf');
+}
+
+@font-face {
+  font-family: 'axiforma-bold';
+  src: url('./assets/fonts/axiforma-bold.ttf');
+}
+
+:root {
+  --font-regular: 'axiforma-regular';
+  --font-light: 'axiforma-light';
+  --font-semibold: 'axiforma-semibold';
+  --font-bold: 'axiforma-bold';
+}
+
+::-webkit-scrollbar {
+  width: 13px;
+  height: 10px;
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 20px;
+}
+
+body {
+  margin: 0;
+  font-family: 'axiforma-regular', sans-serif;
+  scroll-behavior: smooth;
+}
+
+.text-light {
+  font-family: 'axiforma-light', sans-serif;
+}
+
+.text-regular {
+  font-family: 'axiforma-regular', sans-serif;
+}
+
+.text-semibold {
+  font-family: 'axiforma-semibold', sans-serif;
+}
+
+.text-bold {
+  font-family: 'axiforma-bold', sans-serif;
+}
+
+/* .custom-grid {
+} */
+.view-area {
+  height: 92vh;
+  overflow-y: scroll;
+}
+nav {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+}

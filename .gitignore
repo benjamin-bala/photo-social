@@ -2,17 +2,17 @@
 
 # dependencies
 photo-backend/node_modules
-photo-web/node_modules
+photo-social/node_modules
 
 
 # production
-photo-web/build
+photo-social/build
 
 # misc
 photo-backend/.env
-photo-web/.env
+photo-social/.env
 
 photo-backend/npm-debug.log*
-photo-web/npm-debug.log*
-photo-web/yarn-debug.log*
-photo-web/yarn-error.log*
+photo-social/npm-debug.log*
+photo-social/yarn-debug.log*
+photo-social/yarn-error.log*
