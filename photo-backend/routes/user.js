@@ -2,9 +2,18 @@ const router = require('express').Router();
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const updateCollectionData = require('../helpers/updateCollectionData');
 require('dotenv').config();
 
 const JWT_KEY = process.env.JWT_KEY;
+
+/*
+Todos
+- Register user
+- Login user
+- Get user by Id
+- Follow/Unfollow user
+*/
 
 //Register user
 router.route('/register').post(async (req, res) => {
@@ -84,7 +93,7 @@ router.route('/login').post(async (req, res) => {
 router.route('/').post(async (req, res) => {
   const { ids } = req.body;
 
-  const users = await User.find({ _id: { $in: ids } });
+  const users = await User.find(ids ? { _id: { $in: ids } } : null);
   if (!users) {
     return res.status(404).json('User not found');
   }
@@ -103,4 +112,14 @@ router.route('/').post(async (req, res) => {
   return res.json(usersFromDB);
 });
 
+//Follow/Unfollow user
+router.route('/follow').post(async (req, res) => {
+  const { user_id, follower_id } = req.body;
+
+  //Update followers field
+  await updateCollectionData('', 'followers', User, user_id, follower_id);
+
+  //Update following field
+  await updateCollectionData(res, 'following', User, follower_id, user_id);
+});
 module.exports = router;

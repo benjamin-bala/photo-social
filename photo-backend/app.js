@@ -17,11 +17,9 @@ app.get('/', (req, res) => {
 
 //Routes
 const userRoute = require('./routes/user');
-const followerRoute = require('./routes/followers');
 const photoRoute = require('./routes/photo');
 
 app.use('/user', userRoute);
-app.use('/follower', followerRoute);
 app.use('/photo', photoRoute);
 
 app.listen(PORT, () =>

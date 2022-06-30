@@ -1,6 +1,9 @@
 const router = require('express').Router();
 const Photo = require('../models/photo');
+const User = require('../models/user');
 const upload = require('../middleware/multer');
+const updateCollectionData = require('../helpers/updateCollectionData');
+const deleteCollectionData = require('../helpers/deleteCollectionData');
 
 /*
 Todos
@@ -12,11 +15,20 @@ Todos
 - Get photo by Tag
 */
 
+//Get all photo
+router.route('/').get(async (req, res) => {
+  const photo = await Photo.find();
+
+  if (!photo) {
+    res.status(404).json({ message: 'No photo found', status: 'error' });
+  }
+
+  res.status(200).json({ data: photo, status: 'success' });
+});
+
 //Add pictures
 router.route('/add').post(upload.array('image'), async (req, res) => {
   const { title, caption, tags, address, posted_by } = req.body;
-
-  console.log('body', req.body);
 
   let urls = [];
 
@@ -46,54 +58,23 @@ router.route('/add').post(upload.array('image'), async (req, res) => {
 //Like Pictures
 router.route('/like').post(async (req, res) => {
   const { user_id, photo_id } = req.body;
-  const picture = await Photo.findById(photo_id);
+  await updateCollectionData(res, 'likes', Photo, user_id, photo_id);
+});
 
-  if (!picture) {
-    return res.status(404).json({ message: 'photo not found' });
-  }
+//Save picture
+router.route('/save').post(async (req, res) => {
+  const { user_id, photo_id } = req.body;
+  await updateCollectionData(res, 'saved_backdrops', User, photo_id, user_id);
+});
 
-  let likes = picture.likes;
-
-  let hasLiked;
-
-  if (likes.length === 0) {
-    hasLiked = false;
-  }
-
-  likes.map((like) => {
-    if (like === user_id) {
-      hasLiked = true;
-    } else {
-      hasLiked = false;
-    }
-  });
-
-  if (!hasLiked) {
-    likes = [...likes, user_id];
-  } else {
-    // likes = likes.splice(likes.indexOf(user_id), 0);
-    likes = likes.filter((like) => like !== user_id);
-  }
-
-  const updatedLikes = await Photo.findByIdAndUpdate(
-    photo_id,
-    { likes },
-    { new: true }
-  );
-
-  updatedLikes
-    .save()
-    .then((result) => {
-      res.json(result);
-    })
-    .catch((err) => {
-      res.status(400).json({ message: `Error: ${err}` });
-    });
+router.route('/delete').delete(async (req, res) => {
+  const { photo_id } = req.body;
+  await deleteCollectionData(res, Photo, photo_id);
 });
 
 module.exports = router;
 
-//Create function updatePhoto
+//Create function updatePhoto findByIdAndUpdate
 
 // User Id : '62ab465b6dff1e38a5cfba23', '62b07c5870fd898f412a0072';
-//Photo Id: 62b47aeb2bb525b53163d974
+//Photo Id: 62b47aeb2bb525b53163d974 62bdad6d1aba6209a3f01952 62bdadfa1aba6209a3f01954
