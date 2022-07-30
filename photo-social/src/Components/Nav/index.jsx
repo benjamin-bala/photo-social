@@ -12,27 +12,27 @@ export default function Nav() {
   let navLinks = [
     {
       name: 'Home',
-      link: '/',
+      link: '/dash',
       icon: BiHomeCircle,
     },
     {
       name: 'Search',
-      link: '/search',
+      link: '/dash/search',
       icon: BiSearch,
     },
     {
       name: 'Add',
-      link: '/add',
+      link: '/dash/add',
       icon: BsFillPlusCircleFill,
     },
     {
       name: 'Save',
-      link: '/collection',
+      link: '/dash/collection',
       icon: BsFillBookmarkFill,
     },
     {
       name: 'Profile',
-      link: '/profile',
+      link: '/dash/profile',
       icon: FaRegUser,
     },
   ];
