@@ -3,7 +3,7 @@ async function updateCollectionData(
   fieldToUpdate,
   Collection,
   _dataId,
-  _idToUpdate
+  _idToUpdate,
 ) {
   const dbCollection = await Collection.findById(_idToUpdate);
 
@@ -32,11 +32,18 @@ async function updateCollectionData(
     case 'following':
       dataToUpdate = dbCollection.following;
       break;
+    case 'comments':
+      dataToUpdate = dbCollection.comments;
+      break;
     default:
       dataToUpdate = [];
   }
 
-  if (dataToUpdate.length === 0) {
+  try {
+    if (dataToUpdate.length === 0) {
+      hasData = false;
+    }
+  } catch (e) {
     hasData = false;
   }
 
@@ -57,7 +64,7 @@ async function updateCollectionData(
   const updatedData = await Collection.findByIdAndUpdate(
     _idToUpdate,
     { [fieldToUpdate]: dataToUpdate },
-    { new: true }
+    { new: true },
   );
 
   updatedData

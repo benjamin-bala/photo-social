@@ -2,7 +2,9 @@ const router = require('express').Router();
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const upload = require('../middleware/multer');
 const updateCollectionData = require('../helpers/updateCollectionData');
+const verifyToken = require('../utils/verifyToken');
 require('dotenv').config();
 
 const JWT_KEY = process.env.JWT_KEY;
@@ -14,6 +16,28 @@ Todos
 - Get user by Id
 - Follow/Unfollow user
 */
+
+router.use('/', (req, res, next) => {
+  if (req.url === '/login' || req.url === '/register') {
+    next();
+  } else {
+    let token = req.headers['authorization'];
+    if (!token)
+      return res
+        .status(401)
+        .send({ auth: false, message: 'No token provided.' });
+
+    let verification = verifyToken(token);
+
+    if (!verification) {
+      res
+        .status(500)
+        .send({ auth: false, message: 'Failed to authenticate user' });
+    } else {
+      next();
+    }
+  }
+});
 
 //Register user
 router.route('/register').post(async (req, res) => {
@@ -81,7 +105,7 @@ router.route('/login').post(async (req, res) => {
   const { username, password } = req.body;
   const { token, user, status, message } = await verifyUserLogin(
     username,
-    password
+    password,
   );
   if (status === 'error') {
     return res.status(400).json({ status, message });
@@ -92,6 +116,8 @@ router.route('/login').post(async (req, res) => {
 //Get user(s) by id
 router.route('/').post(async (req, res) => {
   const { ids } = req.body;
+
+  console.log(req.body);
 
   const users = await User.find(ids ? { _id: { $in: ids } } : null);
   if (!users) {
@@ -106,10 +132,42 @@ router.route('/').post(async (req, res) => {
       username: user.username,
       fullname: user.fullname,
       profile_pic: user.profile_pic,
+      followers: user.followers,
+      following: user.following,
     });
   });
 
   return res.json(usersFromDB);
+});
+
+//Edit user
+router.route('/edit').post(upload.array('image'), async (req, res) => {
+  const { user_id, fullname } = req.body;
+
+  let urls = [];
+
+  req.files.map((url) => {
+    urls.push(url.path);
+  });
+
+  const users = await User.findByIdAndUpdate(
+    user_id,
+    { profile_pic: urls[0], fullname },
+    { new: true },
+  );
+
+  if (!users) {
+    return res.status(404).json('User not found');
+  }
+
+  users
+    .save()
+    .then((_data) => {
+      return res.json(_data);
+    })
+    .catch((error) => {
+      return res.status(404).json({ message: 'error', error });
+    });
 });
 
 //Follow/Unfollow user

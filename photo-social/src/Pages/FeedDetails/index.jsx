@@ -1,11 +1,10 @@
 import React from 'react';
 import { IoIosArrowBack } from 'react-icons/io';
-import Cardsm from '../../Components/Cardsm';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { uuid } from '../../utils/uuid';
 import Feed from '../../Components/Feed';
 
-export default function Details() {
+export default function FeedDetails() {
   let history = useNavigate();
   let { state } = useLocation();
 
@@ -21,11 +20,8 @@ export default function Details() {
         </span>
       </div>
 
-      <div className='flex flex-col-reverse '>
-        {state &&
-          state.map((_data) => {
-            return <Feed key={uuid()} data={_data} />;
-          })}
+      <div className='flex flex-col'>
+        <Feed data={state} />;
       </div>
     </div>
   );

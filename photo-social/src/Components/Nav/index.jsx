@@ -6,7 +6,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { uuid } from '../../utils/uuid';
 
 export default function Nav() {
-  const [active] = React.useState('home');
+  // const [active] = React.useState('home');
   let { pathname } = useLocation();
 
   let navLinks = [
@@ -22,7 +22,7 @@ export default function Nav() {
     },
     {
       name: 'Add',
-      link: '/dash/add',
+      link: '/dash/upload-spot',
       icon: BsFillPlusCircleFill,
     },
     {

@@ -1,10 +1,12 @@
 require('dotenv').config();
-const JWT_SECRET = process.env.jwt;
+const JWT_SECRET = process.env.JWT_KEY;
+const jwt = require('jsonwebtoken');
 
-export const verifyToken = (token) => {
+function verifyToken(token) {
   try {
     const verify = jwt.verify(token, JWT_SECRET);
-    if (verify.type === 'user') {
+
+    if (verify) {
       return true;
     } else {
       return false;
@@ -13,4 +15,6 @@ export const verifyToken = (token) => {
     console.log(JSON.stringify(error), 'error');
     return false;
   }
-};
+}
+
+module.exports = verifyToken;

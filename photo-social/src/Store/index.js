@@ -11,7 +11,8 @@ export const reducer = (state = initialState, { type, payload }) => {
       return { ...state, user: payload };
     case 'retrive_user':
       return { ...state, user: payload };
-
+    case 'photo':
+      return { ...state, photo: payload };
     case 'store_data':
       return { ...state, ...payload };
     case 'filter':

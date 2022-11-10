@@ -3,7 +3,7 @@ import Roller from '../../Components/Loader/Roller';
 import { loginApi } from '../../Api';
 import { storeContext } from '../../Context';
 import { BsExclamationCircleFill } from 'react-icons/bs';
-import { Navigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Login() {
   const [username, setUsername] = useState('aas');
@@ -14,27 +14,60 @@ export default function Login() {
   });
   const { dispatch, state } = useContext(storeContext);
 
+  const [message, setMessage] = useState('');
+
+  let navigate = useNavigate();
+
   async function onSubmit(event) {
     event.preventDefault();
 
     setResponse({ ...response, loading: true });
 
-    let { data, loading, error } = await loginApi(username, password);
-    setTimeout(() => {
-      if (data?.token) {
-        dispatch({ type: 'user', payload: data });
-        setResponse({ ...response, loading, error, data });
-      } else {
-        setResponse({ ...response, loading, error });
-      }
-    }, 1000);
-
-    console.log('From login ', { data, loading, error });
+    if ([username, password].includes('')) {
+      setResponse({
+        ...response,
+        error: {
+          state: true,
+          message: 'all fields are required',
+        },
+      });
+    } else {
+      let { data, loading, error } = await loginApi(
+        username.toLowerCase(),
+        password,
+      );
+      setTimeout(() => {
+        if (data?.token) {
+          setMessage('Login Successful');
+          dispatch({ type: 'user', payload: data });
+          setResponse({ ...response, loading, error, data });
+          setTimeout(() => {
+            navigate('/dash', { replace: true });
+          }, 2000);
+        } else {
+          setResponse({ ...response, loading, error });
+        }
+      }, 1000);
+    }
   }
 
   return (
-    <div className='max-w-2xl mx-auto'>
-      {state?.user?.token && <Navigate to={'/dash'} replace={true} />}
+    <div className='max-w-2xl mx-auto bg-white'>
+      <div className='w-full flex items-center justify-between p-5'>
+        <div className=''>
+          <p className='logo-text text-3xl'>YouTourism</p>
+        </div>
+        <Link to={'/'}>
+          <div className='w-max bg-gray-900 px-8 py-3 rounded-xl'>
+            <p className='text-white'>Home</p>
+          </div>
+        </Link>
+      </div>
+      {message !== '' ? (
+        <div className='fixed t-0 bg-white py-2 border-l-4 border-green-400'>
+          <p className='pl-4 text-bold text-gray-800'>Login successfully</p>
+        </div>
+      ) : null}
       <form className='flex gap-6 flex-col justify-center items-center p-8'>
         <div className='my-6'>
           <h2 className='text-3xl'>Welcome back 🎉</h2>
@@ -68,17 +101,18 @@ export default function Login() {
               <ErrorMessage message={'Incorrect password'} />
             ) : null}
 
-            {/*(response.error.state &&
-              response?.error?.message &&
-              !response?.error?.message.includes('User')) ||
-            !response?.error?.message.includes('Password') ? (
+            {response.error.state && !response?.error?.message ? (
               <ErrorMessage message={'An error occured! try again'} />
-            ) : null */}
-
-            <p className='text-sm my-2'>Forgot password?</p>
+            ) : null}
           </div>
 
           <div className='my-8 gap-5 flex flex-col justify-center items-center'>
+            <div>
+              {response?.error?.message &&
+              response?.error?.message.includes('required') ? (
+                <ErrorMessage message={'Please f.ill out all f.ields'} />
+              ) : null}
+            </div>
             <div>
               {response.loading && response.loading ? <Roller /> : null}
             </div>
@@ -94,9 +128,11 @@ export default function Login() {
             </div>
 
             <div className='w-full mt-8'>
-              <p className='text-center text-sm'>
-                Don't have an account? signup
-              </p>
+              <Link to={'/auth/signup'}>
+                <p className='text-center text-sm'>
+                  Don't have an account? signup
+                </p>
+              </Link>
             </div>
           </div>
         </div>
